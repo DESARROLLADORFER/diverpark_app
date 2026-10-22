@@ -37,7 +37,6 @@ class _HomePageState extends State<HomePage> {
   List<dynamic> juegos = [];
   List<dynamic> activos = [];
   Timer? _timer;
-  final AlarmPlus _alarmPlus = AlarmPlus();
   final Set<String> _alarmasActivas = {};
 
   @override
@@ -48,8 +47,8 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _inicializarApp() async {
-    await _alarmPlus.initialize();
-    await _alarmPlus.requestPermissions();
+    // Nueva sintaxis para alarm_plus 0.2.0
+    await AlarmPlus.init();
     await _cargarDatos();
   }
 
@@ -86,18 +85,24 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _dispararAlarma(Map<String, dynamic> item) async {
-    await _alarmPlus.triggerNow(
-      alarmSettings: AlarmSettings(
-        id: item['id'].hashCode,
-        dateTime: DateTime.now(),
-        assetAudioPath: 'assets/alarm.mp3',
-        loopAudio: true,
-        vibrate: true,
-        volume: 1.0,
-        notificationTitle: '¡Tiempo Cumplido!',
-        notificationBody: '${item['nino_nombre']} terminó en ${item['juego_nombre']}',
-      ),
-    );
+    try {
+      // Nueva sintaxis para alarm_plus 0.2.0
+      await AlarmPlus.set(
+        AlarmSettings(
+          id: item['id'].hashCode,
+          dateTime: DateTime.now(),
+          assetAudioPath: 'assets/alarm.mp3',
+          loopAudio: true,
+          vibrate: true,
+          volume: 1.0,
+          notificationTitle: '¡Tiempo Cumplido!',
+          notificationBody: '${item['nino_nombre']} terminó en ${item['juego_nombre']}',
+          stopOnNotificationOpen: true,
+        ),
+      );
+    } catch (e) {
+      debugPrint("Error en alarma: $e");
+    }
   }
 
   Future<void> _registrarIngreso(Map<String, dynamic> juego, String nombre, String desc, String padre) async {
@@ -136,7 +141,10 @@ class _HomePageState extends State<HomePage> {
       await http.post(Uri.parse(apiUrl), headers: {'Content-Type': 'application/json'}, body: jsonEncode({'action': 'guardarTransaccion', 'data': tx}));
     }
     await http.post(Uri.parse(apiUrl), headers: {'Content-Type': 'application/json'}, body: jsonEncode({'action': 'eliminarActivo', 'data': {'id': item['id']}}));
-    await _alarmPlus.stop(item['id'].hashCode);
+    
+    // Nueva sintaxis para detener la alarma
+    await AlarmPlus.stop(item['id'].hashCode);
+    
     _alarmasActivas.remove(item['id']);
     await _cargarDatos();
   }
