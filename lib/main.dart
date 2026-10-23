@@ -5,7 +5,6 @@ import 'package:alarm_plus/alarm_plus.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Alarm.init();
   runApp(const DiverParkApp());
 }
 
@@ -31,19 +30,24 @@ class WebAppView extends StatefulWidget {
 
 class _WebAppViewState extends State<WebAppView> {
   late final WebViewController controller;
+  final AlarmPlus _alarmPlus = AlarmPlus();
 
   @override
   void initState() {
     super.initState();
+    
+    // Inicializar el paquete de alarmas
+    _alarmPlus.initialize();
+
     controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..addJavaScriptChannel(
+      .addJavaScriptChannel(
         'AndroidAlarm',
         onMessageReceived: (JavaScriptMessage message) async {
           final data = jsonDecode(message.message);
           
           if (data['action'] == 'schedule') {
-            await Alarm.set(
+            await _alarmPlus.triggerNow(
               alarmSettings: AlarmSettings(
                 id: data['id'].hashCode,
                 dateTime: DateTime.fromMillisecondsSinceEpoch(data['endTime']),
@@ -56,10 +60,12 @@ class _WebAppViewState extends State<WebAppView> {
               ),
             );
           } else if (data['action'] == 'cancel') {
-            await Alarm.stop(data['id'].hashCode);
+            await _alarmPlus.stop(data['id'].hashCode);
           }
         },
       )
+      ..clearCache()          // <--- SOLUCIONA EL PROBLEMA DEL CIERRE DE CAJA
+      ..clearLocalStorage()   // <--- Borra caché vieja
       ..loadRequest(Uri.parse('https://script.google.com/macros/s/AKfycbzf20CKhMmyuqVsebFAJH5NDlArRrH0URG1mbvj2Wd_zhg-BVrvEc3WsaEnLnf0zmQ47w/exec'));
   }
 
