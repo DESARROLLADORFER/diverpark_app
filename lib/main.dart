@@ -33,7 +33,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final String apiUrl = 'https://script.google.com/macros/s/AKfycbyIBpYEYrLQyoETOcpvquyRtqLPDKLyHNxnROJx6xRaEduddkcsTrshdreawhYcNQiNMw/exec';
+  final String apiUrl = 'https://script.google.com/macros/s/AKfycbzf20CKhMmyuqVsebFAJH5NDlArRrH0URG1mbvj2Wd_zhg-BVrvEc3WsaEnLnf0zmQ47w/exec';
   List<dynamic> juegos = [];
   List<dynamic> activos = [];
   Timer? _timer;
