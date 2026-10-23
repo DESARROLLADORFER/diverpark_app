@@ -1,29 +1,34 @@
-allprojects {
-    repositories {
-        google()
-        mavenCentral()
+plugins {
+    id("com.android.application")
+    id("kotlin-android")
+    id("dev.flutter.flutter-gradle-plugin")
+}
+
+android {
+    namespace = "com.example.diverpark_app"
+    compileSdk = 36
+    ndkVersion = flutter.ndkVersion
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
     }
-}
 
-val newBuildDir: Directory = rootProject.layout.buildDirectory.dir("../../build").get()
-rootProject.layout.buildDirectory.value(newBuildDir)
+    defaultConfig {
+        applicationId = "com.example.diverpark_app"
+        minSdk = flutter.minSdkVersion
+        targetSdk = 34
+        versionCode = flutter.versionCode
+        versionName = flutter.versionName
+    }
 
-subprojects {
-    val newSubprojectBuildDir: Directory = newBuildDir.dir(project.name)
-    project.layout.buildDirectory.value(newSubprojectBuildDir)
-}
-
-subprojects {
-    project.evaluationDependsOn(":app")
-    // ESTO ARREGLA EL ERROR DE LAS VERSIONES DEL SONIDO
-    afterEvaluate {
-        if (project.hasProperty("android")) {
-            val android = project.property("android") as com.android.build.gradle.BaseExtension
-            android.compileSdkVersion(36)
+    buildTypes {
+        release {
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
 }
 
-tasks.register<Delete>("clean") {
-    delete(rootProject.layout.buildDirectory)
+flutter {
+    source = "../.."
 }
