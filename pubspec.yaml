@@ -11,7 +11,7 @@ dependencies:
     sdk: flutter
   cupertino_icons: ^1.0.8
   webview_flutter: ^4.7.0
-  audioplayers: ^6.0.0
+  alarm_plus: ^0.2.0
 
 dev_dependencies:
   flutter_test:
@@ -20,3 +20,5 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/alarm.mp3
