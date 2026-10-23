@@ -39,23 +39,20 @@ class _WebAppViewState extends State<WebAppView> {
       ..addJavaScriptChannel(
         'AndroidAlarm',
         onMessageReceived: (JavaScriptMessage message) async {
-          // Recibe las órdenes del HTML
           if (message.message == 'play') {
-            // Suena la alarma nativa de Android en bucle infinito
             FlutterRingtonePlayer().playAlarm(
               looping: true,
               volume: 1.0,
               asAlarm: true,
             );
           } else if (message.message == 'stop') {
-            // Detiene el sonido
             FlutterRingtonePlayer().stop();
           }
         },
       )
-      ..clearCache()          // Borra la caché para que se vea el botón de Cierre de Caja
-      ..clearLocalStorage()   // Borra la memoria local vieja
-      ..loadRequest(Uri.parse('https://script.google.com/macros/s/AKfycbzf20CKhMmyuqVsebFAJH5NDlArRrH0URG1mbvj2Wd_zhg-BVrvEc3WsaEnLnf0zmQ47w/exec'));
+      ..clearCache()
+      ..clearLocalStorage()
+      ..loadRequest(Uri.parse('https://script.google.com/macros/s/AKfycbzf20CKhMmyuqVsebFAJH5NDlArRrH0URG1mbvj2Wd_zhg-BVrvEc3WnaEnLnf0zmQ47w/exec'));
   }
 
   @override
