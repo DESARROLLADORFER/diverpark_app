@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace = "com.example.diverpark_app"
-    compileSdk = 34  // <--- FORZAR VERSIÓN 34
+    compileSdk = 34
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
@@ -14,14 +14,10 @@ android {
         targetCompatibility = JavaVersion.VERSION_1_8
     }
 
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
-
     defaultConfig {
         applicationId = "com.example.diverpark_app"
-        minSdk = 21
-        targetSdk = 34  // <--- FORZAR VERSIÓN 34
+        minSdk = flutter.minSdkVersion
+        targetSdk = 34
         versionCode = flutter.versionCode
         versionName = flutter.versionName
     }
