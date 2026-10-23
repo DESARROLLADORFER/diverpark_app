@@ -36,12 +36,12 @@ class _WebAppViewState extends State<WebAppView> {
   void initState() {
     super.initState();
     
-    // Inicializar el paquete de alarmas
+    // Inicializar el motor de alarma
     _alarmPlus.initialize();
 
     controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      .addJavaScriptChannel(
+      ..addJavaScriptChannel(
         'AndroidAlarm',
         onMessageReceived: (JavaScriptMessage message) async {
           final data = jsonDecode(message.message);
@@ -64,8 +64,8 @@ class _WebAppViewState extends State<WebAppView> {
           }
         },
       )
-      ..clearCache()          // <--- SOLUCIONA EL PROBLEMA DEL CIERRE DE CAJA
-      ..clearLocalStorage()   // <--- Borra caché vieja
+      ..clearCache()
+      ..clearLocalStorage()
       ..loadRequest(Uri.parse('https://script.google.com/macros/s/AKfycbzf20CKhMmyuqVsebFAJH5NDlArRrH0URG1mbvj2Wd_zhg-BVrvEc3WsaEnLnf0zmQ47w/exec'));
   }
 
