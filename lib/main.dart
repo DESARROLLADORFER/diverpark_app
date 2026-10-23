@@ -1,8 +1,11 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
-import 'package:audioplayers/audioplayers.dart';
+import 'package:alarm_plus/alarm_plus.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Alarm.init();
   runApp(const DiverParkApp());
 }
 
@@ -11,10 +14,10 @@ class DiverParkApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'DiverPark',
-      home: const WebAppView(),
+      home: WebAppView(),
     );
   }
 }
@@ -28,25 +31,32 @@ class WebAppView extends StatefulWidget {
 
 class _WebAppViewState extends State<WebAppView> {
   late final WebViewController controller;
-  final AudioPlayer _audioPlayer = AudioPlayer();
 
   @override
   void initState() {
     super.initState();
-    
-    // Configuramos el audio para que se repita infinitamente
-    _audioPlayer.setReleaseMode(ReleaseMode.loop);
-    _audioPlayer.setVolume(1.0);
-
     controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..addJavaScriptChannel(
         'AndroidAlarm',
-        onMessageReceived: (JavaScriptMessage message) {
-          if (message.message == 'play') {
-            _audioPlayer.play(UrlSource('https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg'));
-          } else if (message.message == 'stop') {
-            _audioPlayer.stop();
+        onMessageReceived: (JavaScriptMessage message) async {
+          final data = jsonDecode(message.message);
+          
+          if (data['action'] == 'schedule') {
+            await Alarm.set(
+              alarmSettings: AlarmSettings(
+                id: data['id'].hashCode,
+                dateTime: DateTime.fromMillisecondsSinceEpoch(data['endTime']),
+                assetAudioPath: 'assets/alarm.mp3',
+                loopAudio: true,
+                vibrate: true,
+                volume: 1.0,
+                notificationTitle: data['titulo'],
+                notificationBody: data['mensaje'],
+              ),
+            );
+          } else if (data['action'] == 'cancel') {
+            await Alarm.stop(data['id'].hashCode);
           }
         },
       )
@@ -54,17 +64,9 @@ class _WebAppViewState extends State<WebAppView> {
   }
 
   @override
-  void dispose() {
-    _audioPlayer.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: WebViewWidget(controller: controller),
-      ),
+      body: SafeArea(child: WebViewWidget(controller: controller)),
     );
   }
 }
