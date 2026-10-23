@@ -47,12 +47,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _inicializarApp() async {
-    // Nueva API estática para alarm_plus 0.2.0
-    await AlarmPlus.initialize(
-      onDidReceiveNotificationResponse: (resp) {
-        debugPrint('Notificación tocada: ${resp.alarmId}');
-      },
-    );
+    await AlarmPlus.initialize();
     await _cargarDatos();
   }
 
@@ -90,20 +85,23 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> _dispararAlarma(Map<String, dynamic> item) async {
     try {
-      // Usar triggerNow con los parámetros correctos
-      await AlarmPlus.triggerNow(
+      await AlarmPlus.schedule(
+        id: item['id'].toString(),
+        time: DateTime.now().add(const Duration(seconds: 1)),
         data: {
           'id': item['id'],
           'nombre': item['nino_nombre'],
           'juego': item['juego_nombre'],
         },
-        notificationSettings: AlarmNotificationSettings(
-          title: '¡Tiempo Cumplido!',
-          body: '${item['nino_nombre']} terminó en ${item['juego_nombre']}',
-          soundAsset: 'assets/alarm.mp3',
+        notificationSettings: AlarmSettings(
+          id: item['id'].hashCode,
+          dateTime: DateTime.now().add(const Duration(seconds: 1)),
+          assetAudioPath: 'assets/alarm.mp3',
           loopAudio: true,
           vibrate: true,
           volume: 1.0,
+          notificationTitle: '¡Tiempo Cumplido!',
+          notificationBody: '${item['nino_nombre']} terminó en ${item['juego_nombre']}',
         ),
       );
     } catch (e) {
@@ -148,7 +146,6 @@ class _HomePageState extends State<HomePage> {
     }
     await http.post(Uri.parse(apiUrl), headers: {'Content-Type': 'application/json'}, body: jsonEncode({'action': 'eliminarActivo', 'data': {'id': item['id']}}));
     
-    // Detener la alarma actual (sin argumentos)
     await AlarmPlus.stop();
     
     _alarmasActivas.remove(item['id']);
