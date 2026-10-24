@@ -51,7 +51,7 @@ class _WebAppViewState extends State<WebAppView> {
       )
       ..clearCache()
       ..clearLocalStorage()
-      ..loadRequest(Uri.parse('https://script.google.com/macros/s/AKfycbzf20CKhMmyuqVsebFAJH5NDlArRrH0URG1mbvj2Wd_zhg-BVrvEc3WnaEnLnf0zmQ47w/exec'));
+      ..loadRequest(Uri.parse('https://script.google.com/macros/s/AKfycbzf20CKhMmyuqVsebFAJH5NDlArRrH0URG1mbvj2Wd_zhg-BVrvEc3WsaEnLnf0zmQ47w/exec'));
   }
 
   @override
